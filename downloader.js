@@ -2,10 +2,10 @@ const puppeteer = require('puppeteer');
 const waitSeconds = require('./waitSeconds');
 const getPages = require('./getPages')
 
-async function downloader(url, currentMonth, currentYear) {
+async function downloader(url, currentMonth, currentYear, cnpj, view=true) {
     const browser = await puppeteer.launch({
         ignoreHTTPSErrors: true,
-        headless: false,
+        headless: !view,
     })
 
     const page = await browser.newPage()
@@ -29,7 +29,7 @@ async function downloader(url, currentMonth, currentYear) {
     await page.select('#situacao', '2')
     
     // Add CNPJ
-    await page.type('#codDestinatario', '43192471000151')
+    await page.type('#codDestinatario', cnpj)
     await page.click('body')
 
     // Espera 2 segundos e pesquisa
