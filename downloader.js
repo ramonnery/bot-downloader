@@ -14,11 +14,11 @@ async function downloader(url, currentMonth, currentYear, cnpj, view=true) {
     // Seleciona o mês
     await page.waitForSelector('#mesReferencia');
     await page.click('#mesReferencia')
-    await page.select('#mesReferencia', currentMonth)
+    await page.select('#mesReferencia', String(currentMonth))
 
     // Seleciona o ano
     await page.click('#anoReferencia')
-    await page.select('#anoReferencia', currentYear)
+    await page.select('#anoReferencia', String(currentYear))
 
     // Seleciona a receita
     await page.click('#codReceita')
@@ -45,15 +45,17 @@ async function downloader(url, currentMonth, currentYear, cnpj, view=true) {
         return true
     }
 
+    await waitSeconds(5)
     await page.waitForSelector('.text-center.screen')
     const element = await page.$('.text-center.screen');
     const text = await page.evaluate(element => element.textContent, element);
     let totalPages = getPages(text)
     
     for(let p = 1; p <= totalPages; p++)  {
-        await page.waitForSelector('#lancamentos');
-        await page.click('#lancamentos a.btn')
-        waitSeconds(2)
+        await waitSeconds(1)
+        await page.waitForSelector('#lancamentos a');
+        await page.click('#lancamentos a')
+        await waitSeconds(1)
         await page.click('.glyphicon-triangle-right')
     }
 
