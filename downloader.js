@@ -36,6 +36,15 @@ async function downloader(url, currentMonth, currentYear, cnpj, view=true) {
     await waitSeconds(2)
     await page.click('#pesquisar')
 
+    await waitSeconds(3)
+    const modalDialog = await page.$('.modal-dialog')
+    const erro = modalDialog !== null
+    
+    if(erro) {
+        await browser.close()
+        return true
+    }
+
     await page.waitForSelector('.text-center.screen')
     const element = await page.$('.text-center.screen');
     const text = await page.evaluate(element => element.textContent, element);
@@ -48,9 +57,9 @@ async function downloader(url, currentMonth, currentYear, cnpj, view=true) {
         await page.click('.glyphicon-triangle-right')
     }
 
-   await waitSeconds(4)
-   await browser.close()
-
+    await waitSeconds(4)
+    await browser.close()
+    return false
 }
 
 module.exports = downloader;
