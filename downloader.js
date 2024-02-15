@@ -35,29 +35,35 @@ async function downloader(url, currentMonth, currentYear, cnpj, view=true) {
     // Espera 2 segundos e pesquisa
     await waitSeconds(2)
     await page.click('#pesquisar')
-
-    await waitSeconds(3)
-    const modalDialog = await page.$('.modal-dialog')
-    const erro = modalDialog !== null
     
-    if(erro) {
+    await waitSeconds(3)
+    try {
+        // await waitSeconds(5)
+        await page.waitForSelector('.text-center.screen', {timeout: 5000})
+        const element = await page.$('.text-center.screen');
+        const text = await page.evaluate(element => element.textContent, element);
+        let totalPages = getPages(text)
+        
+        for(let p = 1; p <= totalPages; p++)  {
+            await waitSeconds(1)
+            await page.waitForSelector('#lancamentos a');
+            await page.click('#lancamentos a')
+            await waitSeconds(1)
+            await page.click('.glyphicon-triangle-right')
+        }
+        
+    } catch (error) {
+        // await page.waitForSelector('.modal-dialog');
         await browser.close()
         return true
-    }
+      }
 
-    await waitSeconds(5)
-    await page.waitForSelector('.text-center.screen')
-    const element = await page.$('.text-center.screen');
-    const text = await page.evaluate(element => element.textContent, element);
-    let totalPages = getPages(text)
-    
-    for(let p = 1; p <= totalPages; p++)  {
-        await waitSeconds(1)
-        await page.waitForSelector('#lancamentos a');
-        await page.click('#lancamentos a')
-        await waitSeconds(1)
-        await page.click('.glyphicon-triangle-right')
-    }
+    // if(modalDialog) {
+    //     await browser.close()
+    //     return true
+    // }
+
+   
 
     await waitSeconds(4)
     await browser.close()
